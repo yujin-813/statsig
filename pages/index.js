@@ -13,43 +13,37 @@ const ACCOMMODATIONS = [
     id: 1, name: '그랜드 서울 호텔', area: '서울 강남구', type: '호텔',
     pricePerNight: 128000, totalFor2Nights: 256000,
     rating: 4.8, reviews: 1203, distance: '강남역 도보 3분',
-    tags: ['조식포함', '무료주차', '수영장'], emoji: '🏨',
-    gradFrom: '#E0E7FF', gradTo: '#C7D2FE',
+    tags: ['조식포함', '무료주차', '수영장'], image: '/images/hotel.jpg',
   },
   {
     id: 2, name: '제주 오션뷰 풀빌라', area: '제주 서귀포시', type: '펜션',
     pricePerNight: 320000, totalFor2Nights: 640000,
     rating: 4.9, reviews: 856, distance: '중문관광단지 차로 10분',
-    tags: ['전용수영장', '오션뷰', '바베큐'], emoji: '🌊',
-    gradFrom: '#CCFBF1', gradTo: '#99F6E4',
+    tags: ['전용수영장', '오션뷰', '바베큐'], image: '/images/villa.jpg',
   },
   {
     id: 3, name: '부산 해운대 비치 모텔', area: '부산 해운대구', type: '모텔',
     pricePerNight: 89000, totalFor2Nights: 178000,
     rating: 4.5, reviews: 2341, distance: '해운대해수욕장 도보 1분',
-    tags: ['바다전망', '조기체크인', '무료와이파이'], emoji: '🏖️',
-    gradFrom: '#FED7AA', gradTo: '#FDBA74',
+    tags: ['바다전망', '조기체크인', '무료와이파이'], image: '/images/beach.jpg',
   },
   {
     id: 4, name: '경주 한옥 스테이', area: '경주시 황남동', type: '한옥',
     pricePerNight: 145000, totalFor2Nights: 290000,
     rating: 4.7, reviews: 432, distance: '첨성대 도보 5분',
-    tags: ['한옥체험', '전통조식', '문화유적'], emoji: '🏯',
-    gradFrom: '#BBF7D0', gradTo: '#86EFAC',
+    tags: ['한옥체험', '전통조식', '문화유적'], image: '/images/hanok.jpg',
   },
   {
     id: 5, name: '강릉 소나무 게스트하우스', area: '강릉시 강문동', type: '게스트하우스',
     pricePerNight: 45000, totalFor2Nights: 90000,
     rating: 4.6, reviews: 678, distance: '경포해수욕장 도보 5분',
-    tags: ['공용주방', '바베큐', '자전거대여'], emoji: '🌲',
-    gradFrom: '#FECDD3', gradTo: '#FDA4AF',
+    tags: ['공용주방', '바베큐', '자전거대여'], image: '/images/guesthouse.jpg',
   },
   {
     id: 6, name: '여수 돌산 오션테라스', area: '여수시 돌산읍', type: '풀빌라',
     pricePerNight: 280000, totalFor2Nights: 560000,
     rating: 4.8, reviews: 291, distance: '오동도 차로 15분',
-    tags: ['오션뷰', '테라스', '커플추천'], emoji: '🌅',
-    gradFrom: '#DDD6FE', gradTo: '#C4B5FD',
+    tags: ['오션뷰', '테라스', '커플추천'], image: '/images/terrace.jpg',
   },
 ];
 
@@ -356,12 +350,15 @@ export default function HomePage() {
               >
                 {/* 이미지 영역 */}
                 <div style={{
-                  height: 210,
-                  background: `linear-gradient(145deg, ${acc.gradFrom} 0%, ${acc.gradTo} 100%)`,
-                  position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 88,
+                  height: 210, position: 'relative', overflow: 'hidden', background: '#E8E8E8',
                 }}>
-                  {acc.emoji}
+                  <img
+                    src={acc.image}
+                    alt={acc.name}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform 0.4s ease' }}
+                    onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.05)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}
+                  />
 
                   {/* 저장 버튼 */}
                   <button
