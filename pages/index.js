@@ -1,4 +1,4 @@
-import { useGate, useExperiment, useConfig, Statsig } from 'statsig-react';
+import { useGateValue, useExperiment, useDynamicConfig, useStatsigClient } from '@statsig/react-bindings';
 import { useState } from 'react';
 
 // ─────────────────────────────────────────────────────────────
@@ -70,13 +70,13 @@ function priceLabel(mode) {
 }
 
 export default function HomePage() {
-  const { value: showBadge }   = useGate('special_badge_enabled');
-  const { config: ctaExp }     = useExperiment('cta_button_test');
-  const buttonText             = ctaExp.get('button_text', '예약하기');
-  const { config: searchConf } = useConfig('search_config');
-  const priceDisplay           = searchConf.get('price_display', 'per_night');
-  const sortBy                 = searchConf.get('sort_by', 'popular');
-  const showPromoBanner        = searchConf.get('promo_banner', false);
+  const showBadge    = useGateValue('special_badge_enabled');
+  const ctaExp       = useExperiment('cta_button_test');
+  const buttonText   = ctaExp.get('button_text', '예약하기');
+  const searchConf   = useDynamicConfig('search_config');
+  const priceDisplay = searchConf.get('price_display', 'per_night');
+  const sortBy       = searchConf.get('sort_by', 'popular');
+  const showPromoBanner = searchConf.get('promo_banner', false);
 
   const [searchQuery,    setSearchQuery]    = useState('');
   const [activeCategory, setActiveCategory] = useState('전체');
@@ -85,6 +85,7 @@ export default function HomePage() {
   const [eventLog,       setEventLog]       = useState([]);
   const [panelOpen,      setPanelOpen]      = useState(true);
   const [menuOpen,       setMenuOpen]       = useState(false);
+  const { client } = useStatsigClient();
 
   const filtered = ACCOMMODATIONS.filter(a =>
     (activeCategory === '전체' || a.type === activeCategory) &&
@@ -93,7 +94,7 @@ export default function HomePage() {
   const sorted = sortAccommodations(filtered, sortBy);
 
   function logEvent(name, value, meta = {}) {
-    Statsig.logEvent(name, value, meta);
+    client.logEvent(name, value, meta);
     const ts = new Date().toLocaleTimeString('ko-KR');
     setEventLog(prev => [`[${ts}] ${name}${value ? ` · ${value}` : ''}`, ...prev].slice(0, 8));
   }

@@ -8,6 +8,8 @@
     "start": "next start"
   },
   "dependencies": {
+    "@statsig/js-client": "^3.33.2",
+    "@statsig/react-bindings": "^3.33.2",
     "next": "^14.0.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
