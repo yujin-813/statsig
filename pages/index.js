@@ -1,4 +1,4 @@
-import { useGateValue, useFeatureGate, useExperiment, useDynamicConfig, useStatsigClient } from '@statsig/react-bindings';
+import { useGateValue, useFeatureGate, useExperiment, useDynamicConfig, useStatsigClient, useStatsigUser } from '@statsig/react-bindings';
 import { useState } from 'react';
 
 // ─────────────────────────────────────────────────────────────
@@ -87,6 +87,7 @@ export default function HomePage() {
   const [panelOpen,      setPanelOpen]      = useState(true);
   const [menuOpen,       setMenuOpen]       = useState(false);
   const { client } = useStatsigClient();
+  const { user, updateUserAsync } = useStatsigUser();
 
   const filtered = ACCOMMODATIONS.filter(a =>
     (activeCategory === '전체' || a.type === activeCategory) &&
@@ -510,14 +511,54 @@ export default function HomePage() {
       <div className="statsig-floating">
         {panelOpen && (
           <div className="statsig-panel">
-            <div style={{ fontSize: 11, color: '#475569', fontWeight: 700, letterSpacing: 1, marginBottom: 14, textTransform: 'uppercase' }}>
+            <div style={{ fontSize: 11, color: '#475569', fontWeight: 700, letterSpacing: 1, marginBottom: 12, textTransform: 'uppercase' }}>
               🎓 Statsig 데모 패널 — 현재 적용 값
+            </div>
+
+            {/* 유저 전환 스위처 */}
+            <div style={{ background: '#1E293B', borderRadius: 12, padding: '11px 14px', marginBottom: 8 }}>
+              <div style={{ fontSize: 10, color: '#64748B', fontWeight: 700, marginBottom: 8 }}>👤 유저 전환 (Gate 테스트)</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {[
+                  { label: '내부 직원', email: 'yujin@weirdsector.co.kr', color: '#10B981' },
+                  { label: '일반 유저', email: 'user@gmail.com',           color: '#64748B' },
+                ].map(u => {
+                  const isActive = user.email === u.email;
+                  return (
+                    <button
+                      key={u.email}
+                      onClick={() => updateUserAsync({ userID: u.email, email: u.email })}
+                      style={{
+                        background: isActive ? '#0F2A1E' : '#0F172A',
+                        border: `1.5px solid ${isActive ? u.color : '#334155'}`,
+                        borderRadius: 8, padding: '7px 10px',
+                        display: 'flex', alignItems: 'center', gap: 8,
+                        cursor: 'pointer', textAlign: 'left',
+                      }}
+                    >
+                      <span style={{ fontSize: 10, width: 8, height: 8, borderRadius: '50%', background: isActive ? u.color : '#334155', display: 'inline-block', flexShrink: 0 }} />
+                      <div>
+                        <div style={{ fontSize: 11, fontWeight: 700, color: isActive ? u.color : '#64748B' }}>{u.label}</div>
+                        <div style={{ fontSize: 10, color: '#475569', fontFamily: 'monospace' }}>{u.email}</div>
+                      </div>
+                      {isActive && <span style={{ marginLeft: 'auto', fontSize: 10, color: u.color }}>현재</span>}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             <div style={{ background: '#1E293B', borderRadius: 12, padding: '11px 14px', marginBottom: 8, borderLeft: `3px solid ${showBadge ? '#10B981' : '#334155'}` }}>
               <div style={{ fontSize: 10, color: '#64748B', fontWeight: 700, marginBottom: 4 }}>🚪 FEATURE GATE · special_badge_enabled</div>
               <div style={{ fontSize: 13, fontWeight: 700, color: showBadge ? '#34D399' : '#64748B' }}>
                 {showBadge ? '✅ ON — 특가 배지 노출 중' : '❌ OFF — 배지 숨김'}
+              </div>
+            </div>
+
+            <div style={{ background: '#1E293B', borderRadius: 12, padding: '11px 14px', marginBottom: 8, borderLeft: `3px solid ${staffGate.value ? '#10B981' : '#334155'}` }}>
+              <div style={{ fontSize: 10, color: '#64748B', fontWeight: 700, marginBottom: 4 }}>🔐 FEATURE GATE · internal_staff_only</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: staffGate.value ? '#34D399' : '#64748B' }}>
+                {staffGate.value ? '✅ ON — 내부 직원 배너 노출' : '❌ OFF — 일반 유저'}
               </div>
             </div>
 
