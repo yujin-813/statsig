@@ -1,4 +1,4 @@
-import { useGateValue, useExperiment, useDynamicConfig, useStatsigClient } from '@statsig/react-bindings';
+import { useGateValue, useFeatureGate, useExperiment, useDynamicConfig, useStatsigClient } from '@statsig/react-bindings';
 import { useState } from 'react';
 
 // ─────────────────────────────────────────────────────────────
@@ -71,6 +71,7 @@ function priceLabel(mode) {
 
 export default function HomePage() {
   const showBadge    = useGateValue('special_badge_enabled');
+  const staffGate    = useFeatureGate('internal_staff_only');
   const ctaExp       = useExperiment('cta_button_test');
   const buttonText   = ctaExp.get('button_text', '예약하기');
   const searchConf   = useDynamicConfig('search_config');
@@ -214,6 +215,20 @@ export default function HomePage() {
           <span>🎉</span>
           <span className="promo-text">지금 예약하면 최대 30% 할인 — 오늘 자정까지만!</span>
           <span style={{ fontSize: 12, opacity: 0.85, fontWeight: 400 }}>자세히 보기 →</span>
+        </div>
+      )}
+
+      {/* ── 내부 직원 전용 배너 (Gate: internal_staff_only) ─── */}
+      {staffGate.value && (
+        <div style={{
+          background: 'linear-gradient(90deg, #1E293B 0%, #334155 100%)',
+          color: '#fff', padding: '12px 24px',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+        }}>
+          <span style={{ fontSize: 16 }}>🔐</span>
+          <span style={{ fontSize: 14, fontWeight: 600 }}>내부 직원 전용 모드</span>
+          <span style={{ fontSize: 13, color: '#94A3B8' }}>·</span>
+          <span style={{ fontSize: 13, color: '#94A3B8' }}>@weirdsector.co.kr 계정으로 접속 중 — 내부 기능이 활성화되어 있습니다</span>
         </div>
       )}
 

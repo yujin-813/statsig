@@ -3,7 +3,7 @@ import '../styles/globals.css';
 
 const DEMO_USER = {
   userID: 'demo-user-001',
-  email: 'lecturer@yeogieoddae.com',
+  email: 'yujin@weirdsector.co.kr',
   custom: {
     plan: 'premium',
     country: 'KR',
