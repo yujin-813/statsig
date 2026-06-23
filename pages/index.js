@@ -70,14 +70,25 @@ function priceLabel(mode) {
 }
 
 export default function HomePage() {
-  const showBadge    = useGateValue('special_badge_enabled');
-  const staffGate    = useFeatureGate('internal_staff_only');
-  const ctaExp       = useExperiment('cta_button_test');
-  const buttonText   = ctaExp.get('button_text', '예약하기');
+  // Feature Gates
+  const showBadge       = useGateValue('special_badge_enabled');
+  const staffGate       = useFeatureGate('internal_staff_only');
+  const showPromoBanner = useGateValue('promo_banner_enabled');
+  const showReviewCount = useGateValue('review_count_enabled');
+
+  // Experiments
+  const ctaExp     = useExperiment('cta_button_test');
+  const buttonText = ctaExp.get('button_text', '예약하기');
+
+  // Dynamic Configs
   const searchConf   = useDynamicConfig('search_config');
   const priceDisplay = searchConf.get('price_display', 'per_night');
-  const sortBy       = searchConf.get('sort_by', 'popular');
-  const showPromoBanner = searchConf.get('promo_banner', false);
+
+  const listingConf = useDynamicConfig('listing_config');
+  const sortBy      = listingConf.get('sort_by', 'popular');
+
+  const bannerConf = useDynamicConfig('banner_config');
+  const bannerText = bannerConf.get('banner_text', '지금 예약하면 10% 할인');
 
   const [searchQuery,    setSearchQuery]    = useState('');
   const [activeCategory, setActiveCategory] = useState('전체');
@@ -214,7 +225,7 @@ export default function HomePage() {
           }}
         >
           <span>🎉</span>
-          <span className="promo-text">지금 예약하면 최대 30% 할인 — 오늘 자정까지만!</span>
+          <span className="promo-text">{bannerText}</span>
           <span style={{ fontSize: 12, opacity: 0.85, fontWeight: 400 }}>자세히 보기 →</span>
         </div>
       )}
@@ -395,7 +406,9 @@ export default function HomePage() {
                 <div style={{ padding: '16px 18px 20px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
                     <span style={{ fontSize: 13, color: '#FF5C35', fontWeight: 700 }}>★ {acc.rating}</span>
-                    <span style={{ fontSize: 12, color: '#BBB', marginLeft: 4 }}>({acc.reviews.toLocaleString()})</span>
+                    {showReviewCount && (
+                      <span style={{ fontSize: 12, color: '#BBB', marginLeft: 4 }}>({acc.reviews.toLocaleString()})</span>
+                    )}
                     <span style={{ flex: 1 }} />
                     <span style={{ fontSize: 12, color: '#AAA' }}>📍 {acc.distance}</span>
                   </div>
@@ -548,31 +561,39 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div style={{ background: '#1E293B', borderRadius: 12, padding: '11px 14px', marginBottom: 8, borderLeft: `3px solid ${showBadge ? '#10B981' : '#334155'}` }}>
-              <div style={{ fontSize: 10, color: '#64748B', fontWeight: 700, marginBottom: 4 }}>🚪 FEATURE GATE · special_badge_enabled</div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: showBadge ? '#34D399' : '#64748B' }}>
-                {showBadge ? '✅ ON — 특가 배지 노출 중' : '❌ OFF — 배지 숨김'}
+            {/* Feature Gates */}
+            <div style={{ fontSize: 10, color: '#475569', fontWeight: 700, marginBottom: 6, marginTop: 4 }}>FEATURE GATES</div>
+
+            {[
+              { label: 'special_badge_enabled', value: showBadge,           desc: showBadge ? '특가 배지 노출 중' : '배지 숨김' },
+              { label: 'internal_staff_only',   value: staffGate.value,     desc: staffGate.value ? '내부 직원 배너 노출' : '일반 유저' },
+              { label: 'promo_banner_enabled',  value: showPromoBanner,     desc: showPromoBanner ? `배너 노출 중` : '배너 숨김' },
+              { label: 'review_count_enabled',  value: showReviewCount,     desc: showReviewCount ? '리뷰 수 노출 중' : '리뷰 수 숨김' },
+            ].map(g => (
+              <div key={g.label} style={{ background: '#1E293B', borderRadius: 10, padding: '9px 12px', marginBottom: 6, borderLeft: `3px solid ${g.value ? '#10B981' : '#334155'}` }}>
+                <div style={{ fontSize: 10, color: '#64748B', fontWeight: 700, marginBottom: 3 }}>🚪 {g.label}</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: g.value ? '#34D399' : '#64748B' }}>
+                  {g.value ? `✅ ON — ${g.desc}` : `❌ OFF — ${g.desc}`}
+                </div>
               </div>
+            ))}
+
+            {/* Experiment */}
+            <div style={{ fontSize: 10, color: '#475569', fontWeight: 700, marginBottom: 6, marginTop: 8 }}>EXPERIMENT</div>
+            <div style={{ background: '#1E293B', borderRadius: 10, padding: '9px 12px', marginBottom: 6, borderLeft: '3px solid #6366F1' }}>
+              <div style={{ fontSize: 10, color: '#64748B', fontWeight: 700, marginBottom: 3 }}>🧪 cta_button_test</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#A5B4FC' }}>button_text: &quot;{buttonText}&quot;</div>
             </div>
 
-            <div style={{ background: '#1E293B', borderRadius: 12, padding: '11px 14px', marginBottom: 8, borderLeft: `3px solid ${staffGate.value ? '#10B981' : '#334155'}` }}>
-              <div style={{ fontSize: 10, color: '#64748B', fontWeight: 700, marginBottom: 4 }}>🔐 FEATURE GATE · internal_staff_only</div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: staffGate.value ? '#34D399' : '#64748B' }}>
-                {staffGate.value ? '✅ ON — 내부 직원 배너 노출' : '❌ OFF — 일반 유저'}
-              </div>
+            {/* Dynamic Configs */}
+            <div style={{ fontSize: 10, color: '#475569', fontWeight: 700, marginBottom: 6, marginTop: 8 }}>DYNAMIC CONFIGS</div>
+            <div style={{ background: '#1E293B', borderRadius: 10, padding: '9px 12px', marginBottom: 6, borderLeft: '3px solid #F59E0B' }}>
+              <div style={{ fontSize: 10, color: '#64748B', fontWeight: 700, marginBottom: 3 }}>⚙️ banner_config</div>
+              <div style={{ fontSize: 12, color: '#FDE68A' }}>banner_text: <b>&quot;{bannerText}&quot;</b></div>
             </div>
-
-            <div style={{ background: '#1E293B', borderRadius: 12, padding: '11px 14px', marginBottom: 8, borderLeft: '3px solid #6366F1' }}>
-              <div style={{ fontSize: 10, color: '#64748B', fontWeight: 700, marginBottom: 4 }}>🧪 EXPERIMENT · cta_button_test</div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#A5B4FC' }}>button_text: &quot;{buttonText}&quot;</div>
-            </div>
-
-            <div style={{ background: '#1E293B', borderRadius: 12, padding: '11px 14px', marginBottom: eventLog.length > 0 ? 8 : 0, borderLeft: '3px solid #F59E0B' }}>
-              <div style={{ fontSize: 10, color: '#64748B', fontWeight: 700, marginBottom: 4 }}>⚙️ DYNAMIC CONFIG · search_config</div>
-              <div style={{ fontSize: 12, color: '#FDE68A', lineHeight: 1.7 }}>
-                price_display: <b>{priceDisplay}</b>&nbsp;&nbsp;|&nbsp;&nbsp;sort_by: <b>{sortBy}</b><br />
-                promo_banner: <b>{showPromoBanner ? 'true' : 'false'}</b>
-              </div>
+            <div style={{ background: '#1E293B', borderRadius: 10, padding: '9px 12px', marginBottom: eventLog.length > 0 ? 6 : 0, borderLeft: '3px solid #F59E0B' }}>
+              <div style={{ fontSize: 10, color: '#64748B', fontWeight: 700, marginBottom: 3 }}>⚙️ listing_config</div>
+              <div style={{ fontSize: 12, color: '#FDE68A' }}>sort_by: <b>{sortBy}</b>&nbsp;&nbsp;|&nbsp;&nbsp;price_display: <b>{priceDisplay}</b></div>
             </div>
 
             {eventLog.length > 0 && (
