@@ -16,7 +16,10 @@ export default function App({ Component, pageProps }) {
     <StatsigProvider
       sdkKey={process.env.NEXT_PUBLIC_STATSIG_CLIENT_KEY}
       user={DEMO_USER}
-      options={{ loggingEnabled: 'always' }}
+      options={{
+        loggingEnabled: 'always',
+        environment: { tier: process.env.NEXT_PUBLIC_STATSIG_ENV ?? 'development' },
+      }}
     >
       <Component {...pageProps} />
     </StatsigProvider>
