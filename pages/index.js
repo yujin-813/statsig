@@ -219,28 +219,76 @@ export default function HomePage() {
         <div
           onClick={() => logEvent('promo_banner_clicked')}
           style={{
-            background: 'linear-gradient(90deg, #FF4500 0%, #FF8C42 100%)',
-            color: '#fff', textAlign: 'center', padding: '11px 24px', cursor: 'pointer',
-            fontSize: 14, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            background: 'linear-gradient(90deg, #CC2900 0%, #FF4500 40%, #FF7A00 100%)',
+            color: '#fff', cursor: 'pointer',
+            position: 'relative', overflow: 'hidden',
+            boxShadow: '0 4px 20px rgba(255,60,0,0.5)',
           }}
         >
-          <span>🎉</span>
-          <span className="promo-text">{bannerText}</span>
-          <span style={{ fontSize: 12, opacity: 0.85, fontWeight: 400 }}>자세히 보기 →</span>
+          <div style={{
+            position: 'absolute', top: 0, left: '-100%', width: '55%', height: '100%',
+            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent)',
+            animation: 'shimmer 2.2s ease-in-out infinite',
+            pointerEvents: 'none',
+          }} />
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            gap: 14, padding: '18px 28px',
+          }}>
+            <span style={{ fontSize: 28, animation: 'bounce 1.2s ease-in-out infinite', lineHeight: 1 }}>🎉</span>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{
+                  background: '#fff', color: '#FF3A00',
+                  fontSize: 12, fontWeight: 900, padding: '3px 9px', borderRadius: 5, letterSpacing: 1,
+                }}>SALE</span>
+                <span style={{ fontSize: 11, opacity: 0.85, letterSpacing: 0.5 }}>한정 기간 특별 할인</span>
+              </div>
+              <span className="promo-text" style={{ fontSize: 20, fontWeight: 800, letterSpacing: -0.5, lineHeight: 1.2 }}>{bannerText}</span>
+            </div>
+            <span style={{
+              fontSize: 14, fontWeight: 700,
+              background: 'rgba(255,255,255,0.2)', border: '1.5px solid rgba(255,255,255,0.5)',
+              padding: '8px 18px', borderRadius: 24, backdropFilter: 'blur(4px)',
+              whiteSpace: 'nowrap', marginLeft: 8,
+            }}>지금 예약하기 →</span>
+          </div>
         </div>
       )}
 
       {/* ── 내부 직원 전용 배너 (Gate: internal_staff_only) ─── */}
       {staffGate.value && (
-        <div style={{
-          background: 'linear-gradient(90deg, #1E293B 0%, #334155 100%)',
-          color: '#fff', padding: '12px 24px',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-        }}>
-          <span style={{ fontSize: 16 }}>🔐</span>
-          <span style={{ fontSize: 14, fontWeight: 600 }}>내부 직원 전용 모드</span>
-          <span style={{ fontSize: 13, color: '#94A3B8' }}>·</span>
-          <span style={{ fontSize: 13, color: '#94A3B8' }}>@weirdsector.co.kr 계정으로 접속 중 — 내부 기능이 활성화되어 있습니다</span>
+        <div>
+          <div style={{
+            background: 'repeating-linear-gradient(45deg, #000 0px, #000 14px, #FBBF24 14px, #FBBF24 28px)',
+            height: 6,
+          }} />
+          <div style={{
+            background: 'linear-gradient(90deg, #0F172A 0%, #1E293B 50%, #0F172A 100%)',
+            color: '#fff', padding: '14px 28px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14,
+          }}>
+            <span style={{ fontSize: 26, lineHeight: 1 }}>🔐</span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{
+                  background: '#EF4444', color: '#fff',
+                  fontSize: 11, fontWeight: 900, padding: '3px 8px', borderRadius: 4, letterSpacing: 1.5,
+                }}>INTERNAL ONLY</span>
+                <span style={{
+                  width: 8, height: 8, borderRadius: '50%', background: '#4ADE80',
+                  display: 'inline-block', animation: 'blink 1.1s ease-in-out infinite',
+                }} />
+                <span style={{ fontSize: 11, color: '#94A3B8' }}>LIVE</span>
+              </div>
+              <span style={{ fontSize: 17, fontWeight: 800, letterSpacing: -0.3 }}>내부 직원 전용 모드 활성화</span>
+              <span style={{ fontSize: 12, color: '#94A3B8' }}>@weirdsector.co.kr 계정으로 접속 중 — 내부 기능이 활성화되어 있습니다</span>
+            </div>
+          </div>
+          <div style={{
+            background: 'repeating-linear-gradient(45deg, #000 0px, #000 14px, #FBBF24 14px, #FBBF24 28px)',
+            height: 6,
+          }} />
         </div>
       )}
 
@@ -747,6 +795,8 @@ export default function HomePage() {
           box-shadow: 0 12px 48px rgba(0,0,0,0.35);
           border: 1px solid #1E293B;
           animation: slideUp 0.2s ease-out;
+          max-height: calc(100vh - 120px);
+          overflow-y: auto;
         }
         .statsig-toggle {
           background: #0F172A; color: #fff;
@@ -813,6 +863,18 @@ export default function HomePage() {
         @keyframes slideUp {
           from { opacity: 0; transform: translateY(10px); }
           to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes shimmer {
+          0%   { left: -100%; }
+          100% { left: 200%; }
+        }
+        @keyframes bounce {
+          0%, 100% { transform: translateY(0); }
+          50%       { transform: translateY(-3px); }
+        }
+        @keyframes blink {
+          0%, 100% { opacity: 1; }
+          50%       { opacity: 0.2; }
         }
         button { font-family: inherit; }
         ::-webkit-scrollbar { display: none; }
