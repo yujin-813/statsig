@@ -80,6 +80,9 @@ export default function HomePage() {
   const ctaExp     = useExperiment('cta_button_test');
   const buttonText = ctaExp.get('button_text', '예약하기');
 
+  const colorExp   = useExperiment('reserve_button_color_test');
+  const buttonColor = colorExp.get('button_color', '#FF385C');
+
   // Dynamic Configs
   const searchConf   = useDynamicConfig('search_config');
   const priceDisplay = searchConf.get('price_display', 'per_night');
@@ -115,6 +118,7 @@ export default function HomePage() {
   function handleBook(acc, e) {
     e.stopPropagation();
     setClickedId(acc.id);
+    logEvent('reserve_button_click');
     logEvent('accommodation_booked', acc.pricePerNight, {
       accommodation_id: String(acc.id),
       accommodation_name: acc.name,
@@ -498,7 +502,7 @@ export default function HomePage() {
                       style={{
                         background: clickedId === acc.id
                           ? 'linear-gradient(135deg, #059669 0%, #10B981 100%)'
-                          : 'linear-gradient(135deg, #FF5C35 0%, #FF7A5A 100%)',
+                          : buttonColor,
                         color: '#fff', border: 'none', borderRadius: 12,
                         padding: '12px 20px', fontSize: 14, fontWeight: 700, cursor: 'pointer',
                         whiteSpace: 'nowrap', transition: 'all 0.2s', minWidth: 100,
@@ -631,6 +635,13 @@ export default function HomePage() {
             <div style={{ background: '#1E293B', borderRadius: 10, padding: '9px 12px', marginBottom: 6, borderLeft: '3px solid #6366F1' }}>
               <div style={{ fontSize: 10, color: '#64748B', fontWeight: 700, marginBottom: 3 }}>🧪 cta_button_test</div>
               <div style={{ fontSize: 12, fontWeight: 700, color: '#A5B4FC' }}>button_text: &quot;{buttonText}&quot;</div>
+            </div>
+            <div style={{ background: '#1E293B', borderRadius: 10, padding: '9px 12px', marginBottom: 6, borderLeft: '3px solid #6366F1' }}>
+              <div style={{ fontSize: 10, color: '#64748B', fontWeight: 700, marginBottom: 3 }}>🧪 reserve_button_color_test</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ width: 14, height: 14, borderRadius: 4, background: buttonColor, border: '1px solid #334155', flexShrink: 0 }} />
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#A5B4FC' }}>button_color: &quot;{buttonColor}&quot;</div>
+              </div>
             </div>
 
             {/* Dynamic Configs */}
